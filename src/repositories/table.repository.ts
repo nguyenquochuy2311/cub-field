@@ -141,7 +141,7 @@ export class TableRepository extends Repository<IRecordDataModel> {
 			indexes: [{ name: 'idx_deletedAt', fields: ['deletedAt'] }],
 			modelName: this.parseTableID,
 			tableName: this.parseTableID,
-			timestamps: false,
+			timestamps: true,
 			paranoid: true,
 		});
 
