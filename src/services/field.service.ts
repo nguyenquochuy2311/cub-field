@@ -1,3 +1,4 @@
+import { FieldActions } from '@/actions/field.action';
 import { TableActions } from '@/actions/table.action';
 import { CommonException } from '@/exceptions/common.exception';
 import { ConnectionHelper } from '@/helpers/connection.helper';
@@ -30,5 +31,6 @@ export const FieldService: ServiceSchema = {
 
 	actions: {
 		...TableActions,
+		...FieldActions,
 	},
 };

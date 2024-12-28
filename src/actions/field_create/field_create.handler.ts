@@ -1,18 +1,19 @@
 import { TableException } from '@/exceptions/table.exception';
 import { ConnectionHelper } from '@/helpers/connection.helper';
 import { ActionHandler } from '@/helpers/handler.helper';
+import { IFieldModel } from '@/models';
 import { FieldRepository } from '@/repositories/field.repository';
 import { TableRepository } from '@/repositories/table.repository';
 import { ILocals } from '@/types/moleculer.type';
 import { ISequelize, ITransaction } from '@/types/sequelize.type';
-import { TableDeleteInputType } from './table_delete.input';
+import { FieldCreateInputType } from './field_create.input';
 
-export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
+export class FieldCreateHandler extends ActionHandler<FieldCreateInputType, IFieldModel> {
 	private connection: ISequelize;
 	private _fieldRepository: FieldRepository;
 
 	/**
-	 * Creates an instance of TableDeleteHandler.
+	 * Creates an instance of FieldCreateHandler.
 	 *
 	 * @constructor
 	 * @param {ILocals} locals
@@ -25,14 +26,13 @@ export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
 	}
 
 	/**
-	 * Delete a table
+	 * Create a field
 	 *
-	 * @param {TableDeleteInputType} input
-	 * @returns {Promise<void>}
+	 * @param {FieldCreateInputType} input
+	 * @returns {Promise<IFieldModel>}
 	 */
-	async execute(input: TableDeleteInputType): Promise<void> {
-		const { tableID } = input;
-		const tableRepository = new TableRepository(this.locals.workspaceID, tableID);
+	async execute(input: FieldCreateInputType): Promise<IFieldModel> {
+		const tableRepository = new TableRepository(this.locals.workspaceID, input.tableID);
 
 		if (!(await tableRepository.checkTableExisted())) {
 			throw TableException.tableNotFound();
@@ -43,12 +43,15 @@ export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
 		try {
 			transaction = await this.connection.createTransaction();
 
-			await this._fieldRepository.delete({ tableID }, transaction);
-			await tableRepository.dropTable(transaction);
+			const field = await this._fieldRepository.create(input, transaction);
+
+			await new TableRepository(this.locals.workspaceID, input.tableID).createField(field.id, transaction);
 
 			await transaction.safeCommit();
+
+			return field;
 		} catch (error) {
-			await transaction.safeRollback();
+			transaction && (await transaction.safeRollback());
 			throw error;
 		}
 	}

@@ -1,18 +1,18 @@
-import { TableException } from '@/exceptions/table.exception';
+import { FieldException } from '@/exceptions/field.exception';
 import { ConnectionHelper } from '@/helpers/connection.helper';
 import { ActionHandler } from '@/helpers/handler.helper';
 import { FieldRepository } from '@/repositories/field.repository';
 import { TableRepository } from '@/repositories/table.repository';
 import { ILocals } from '@/types/moleculer.type';
 import { ISequelize, ITransaction } from '@/types/sequelize.type';
-import { TableDeleteInputType } from './table_delete.input';
+import { FieldDeleteInputType } from './field_delete.input';
 
-export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
+export class FieldDeleteHandler extends ActionHandler<FieldDeleteInputType> {
 	private connection: ISequelize;
 	private _fieldRepository: FieldRepository;
 
 	/**
-	 * Creates an instance of TableDeleteHandler.
+	 * Creates an instance of FieldDeleteHandler.
 	 *
 	 * @constructor
 	 * @param {ILocals} locals
@@ -25,17 +25,18 @@ export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
 	}
 
 	/**
-	 * Delete a table
+	 * Get list of fields
 	 *
-	 * @param {TableDeleteInputType} input
-	 * @returns {Promise<void>}
+	 * @param {FieldGetListInputType} input
+	 * @returns {Promise<FieldGetListOutputType>}
 	 */
-	async execute(input: TableDeleteInputType): Promise<void> {
-		const { tableID } = input;
-		const tableRepository = new TableRepository(this.locals.workspaceID, tableID);
+	async execute(input: FieldDeleteInputType): Promise<void> {
+		const { tableID, fieldIDs } = input;
 
-		if (!(await tableRepository.checkTableExisted())) {
-			throw TableException.tableNotFound();
+		const fields = await this._fieldRepository.getAll({ tableID, id: fieldIDs });
+
+		if (fields.length !== fieldIDs.length || fields.some(field => field.isPrimary)) {
+			throw FieldException.fieldInvalid('Some fields are invalid');
 		}
 
 		let transaction!: ITransaction;
@@ -43,8 +44,8 @@ export class TableDeleteHandler extends ActionHandler<TableDeleteInputType> {
 		try {
 			transaction = await this.connection.createTransaction();
 
-			await this._fieldRepository.delete({ tableID }, transaction);
-			await tableRepository.dropTable(transaction);
+			await this._fieldRepository.delete({ id: fieldIDs }, transaction);
+			await new TableRepository(this.locals.workspaceID, tableID).deleteFields(fieldIDs, transaction);
 
 			await transaction.safeCommit();
 		} catch (error) {
