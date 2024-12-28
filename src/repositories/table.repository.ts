@@ -20,7 +20,6 @@ export class TableRepository extends Repository<IRecordDataModel> {
 	 */
 	constructor(workspaceID: string, tableID: string) {
 		super(workspaceID);
-
 		this.parseTableID = parseTableID(tableID);
 	}
 

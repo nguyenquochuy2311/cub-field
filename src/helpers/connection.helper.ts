@@ -1,7 +1,7 @@
 import { CONFIG } from '@/configs';
 import { Models } from '@/models';
 import { ISequelize, ITransaction } from '@/types/sequelize.type';
-import _ from 'lodash';
+import { values } from 'lodash';
 import mysql, { Connection } from 'mysql2/promise';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 
@@ -25,7 +25,7 @@ export class ConnectionHelper {
 		},
 		dialectOptions: {
 			ssl: {
-				rejectUnauthorized: true,
+				rejectUnauthorized: false,
 			},
 		},
 		logging: CONFIG.NODE_ENV === 'development' ? console.log : false,
@@ -63,7 +63,7 @@ export class ConnectionHelper {
 				user: CONFIG.DB_USER,
 				password: CONFIG.DB_PASSWORD,
 				ssl: {
-					rejectUnauthorized: true,
+					rejectUnauthorized: false,
 				},
 			});
 
@@ -135,7 +135,7 @@ export class ConnectionHelper {
 				}
 			};
 
-			conn.addModels(_.values(Models));
+			conn.addModels(values(Models));
 
 			// Stored connection in global caches
 			ConnectionHelper.CONNECTIONS[dbName] = conn;
