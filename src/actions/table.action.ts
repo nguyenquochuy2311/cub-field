@@ -7,11 +7,13 @@ import { TableDeleteInputValidator } from './table_delete/table_delete.input';
 
 export const TableActions: ServiceActionsSchema = {
 	'table.create': {
+		rest: 'POST /table/create',
 		params: TableCreateInputValidator,
 		handler: (ctx: IContext) => new TableCreateHandler(ctx.locals).execute(ctx.params),
 	},
 
 	'table.delete': {
+		rest: 'DELETE /table/delete/:tableID',
 		params: TableDeleteInputValidator,
 		handler: (ctx: IContext) => new TableDeleteHandler(ctx.locals).execute(ctx.params),
 	},

@@ -7,12 +7,14 @@ import { ServiceSchema } from 'moleculer';
 import { ULID } from 'ulidx';
 
 export const makeServerAdapter = () => {
-	const bullBoard = require('bull-board');
+	const { ExpressAdapter } = require('@bull-board/express');
+	const { createBullBoard } = require('@bull-board/api');
+	const { BullMQAdapter } = require('@bull-board/api/bullMQAdapter');
 
-	const serverAdapter = new bullBoard.ExpressAdapter();
+	const serverAdapter = new ExpressAdapter();
 
-	bullBoard.createBullBoard({
-		queues: map(QueueHelper.QUEUES, queue => new bullBoard.BullMQAdapter(queue)),
+	createBullBoard({
+		queues: map(QueueHelper.QUEUES, queue => new BullMQAdapter(queue)),
 		serverAdapter,
 	});
 
@@ -22,9 +24,7 @@ export const makeServerAdapter = () => {
 
 export const BullGatewayService: ServiceSchema = {
 	name: 'queues',
-
 	mixins: [require('moleculer-web')],
-
 	settings: {
 		server: false,
 		routes: [
@@ -37,16 +37,13 @@ export const BullGatewayService: ServiceSchema = {
 
 export const ApiGatewayService: ServiceSchema = {
 	name: CONFIG.NAMESPACE,
-
 	mixins: [require('moleculer-web')],
-
 	settings: {
 		port: CONFIG.DEBUG_PORT,
 
 		routes: [
 			{
 				autoAliases: true,
-
 				onBeforeCall(ctx: IContext, route: any, req: any): void {
 					const { workspaceid, userid, lang } = req.headers;
 

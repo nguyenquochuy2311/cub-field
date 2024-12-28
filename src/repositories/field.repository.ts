@@ -1,9 +1,9 @@
 import { FieldModel, IFieldModel } from '@/models';
 import { IRepository, ITransaction } from '@/types/sequelize.type';
 import { WhereOptions } from 'sequelize';
-import { RepositoryCache } from './_repo.cache';
+import { Repository } from './_repository';
 
-export class FieldRepository extends RepositoryCache<IFieldModel> {
+export class FieldRepository extends Repository<IFieldModel> {
 	/**
 	 * Creates an instance of FieldRepository.
 	 *
@@ -32,7 +32,7 @@ export class FieldRepository extends RepositoryCache<IFieldModel> {
 	 * @returns {Promise<IFieldModel[]>}
 	 */
 	async getAll(where: WhereOptions<IFieldModel>): Promise<IFieldModel[]> {
-		return this._getAllByCache('GET_ALL', { where });
+		return super._getAll({ where });
 	}
 
 	/**
@@ -44,7 +44,7 @@ export class FieldRepository extends RepositoryCache<IFieldModel> {
 	 * @returns {Promise<IFieldModel>}
 	 */
 	async create(field: Partial<IFieldModel>, transaction?: ITransaction): Promise<IFieldModel> {
-		return this._createByCache(field, { transaction });
+		return super._create(field, { transaction });
 	}
 
 	/**
@@ -55,6 +55,6 @@ export class FieldRepository extends RepositoryCache<IFieldModel> {
 	 * @returns {Promise<void>}
 	 */
 	async delete(where: WhereOptions<IFieldModel>, transaction: ITransaction): Promise<void> {
-		await this._deleteByCache({ force: true, where, transaction });
+		await this._delete({ force: true, where, transaction });
 	}
 }
