@@ -43,7 +43,7 @@ export class FieldCreateHandler extends ActionHandler<FieldCreateInputType, IFie
 		try {
 			transaction = await this.connection.createTransaction();
 
-			const field = await this._fieldRepository.create(input, transaction);
+			const field = await this._fieldRepository.create(input as IFieldModel, transaction);
 
 			await new TableRepository(this.locals.workspaceID, input.tableID).createField(field.id, transaction);
 

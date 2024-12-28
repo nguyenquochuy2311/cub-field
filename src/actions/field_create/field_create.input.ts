@@ -10,7 +10,7 @@ const rawSchema = new ZodParams({
 		.number()
 		.int()
 		.refine(d => {
-			if (!Object.values(FieldDataType).includes(d)) {
+			if (!Object.values(FieldDataType).includes(d as any)) {
 				throw FieldException.fieldInvalid('Field dataType is invalid');
 			}
 
