@@ -1,0 +1,17 @@
+{
+	"version": "3.0.0",
+	"configurations": [
+		{
+			"type": "node-terminal",
+			"request": "launch",
+			"name": "Start Debugger",
+			"command": "npm run start"
+		},
+		{
+			"type": "node-terminal",
+			"request": "launch",
+			"name": "Migrate Debugger",
+			"command": "npm run migrate:ts"
+		}
+	]
+}
