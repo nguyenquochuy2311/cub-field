@@ -18,7 +18,11 @@ export class FieldException extends Exception {
 	 * @returns {*}
 	 */
 	static fieldInvalid(message = 'Field is invalid') {
-		return super.badRequest('FIELD_INVALID', message);
+		return super.businessException('FIELD_INVALID', message);
+	}
+
+	static fieldCycleDetected() {
+		return super.businessException('')
 	}
 
 	/**
