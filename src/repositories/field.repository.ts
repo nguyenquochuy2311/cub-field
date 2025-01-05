@@ -27,7 +27,6 @@ export class FieldRepository extends Repository<IFieldModel> {
 	/**
 	 * Get all fields by where conditions
 	 *
-	 * @async
 	 * @param {WhereOptions<IFieldModel>} where
 	 * @returns {Promise<IFieldModel[]>}
 	 */
@@ -36,15 +35,46 @@ export class FieldRepository extends Repository<IFieldModel> {
 	}
 
 	/**
+	 * Get one field
+	 *
+	 * @param {WhereOptions<IFieldModel>} where
+	 * @returns {Promise<IFieldModel|null>}
+	 */
+	async getOne(where: WhereOptions<IFieldModel>): Promise<IFieldModel | null> {
+		return super._getOne({ where });
+	}
+
+	/**
+	 * Get field by primary key
+	 *
+	 * @param {string} id
+	 * @returns {Promise<IFieldModel | null>}
+	 */
+	async getByPk(id: string): Promise<IFieldModel | null> {
+		return super._getByPk(id);
+	}
+
+	/**
 	 * Create field
 	 *
-	 * @async
 	 * @param {Partial<IFieldModel>} field
 	 * @param {ITransaction} transaction
 	 * @returns {Promise<IFieldModel>}
 	 */
 	async create(field: Partial<IFieldModel>, transaction?: ITransaction): Promise<IFieldModel> {
 		return super._create(field, { transaction });
+	}
+
+	/**
+	 * Update field
+	 *
+	 * @param {Partial<IFieldModel>} field
+	 * @param {WhereOptions<IFieldModel>} where
+	 * @param {?ITransaction} [transaction]
+	 * @returns {Promise<void>}
+	 */
+	async update(field: Partial<IFieldModel>, where: WhereOptions<IFieldModel>, transaction?: ITransaction): Promise<void> {
+		await super._update(field, { where, transaction });
 	}
 
 	/**

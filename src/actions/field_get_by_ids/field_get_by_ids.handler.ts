@@ -3,13 +3,13 @@ import { ActionHandler } from '@/helpers/handler.helper';
 import { IFieldModel } from '@/models';
 import { FieldRepository } from '@/repositories/field.repository';
 import { ILocals } from '@/types/moleculer.type';
-import { FieldListInputType } from './field_list.input';
+import { FieldGetByIDsInputType } from './field_get_by_ids.input';
 
-export class FieldListHandler extends ActionHandler<FieldListInputType, IFieldModel[]> {
+export class FieldGetByIDsHandler extends ActionHandler<FieldGetByIDsInputType, IFieldModel[]> {
 	private _fieldRepository: FieldRepository;
 
 	/**
-	 * Creates an instance of FieldListHandler.
+	 * Creates an instance of FieldGetByIDsHandler.
 	 *
 	 * @constructor
 	 * @param {ILocals} locals
@@ -26,10 +26,10 @@ export class FieldListHandler extends ActionHandler<FieldListInputType, IFieldMo
 	 * @param {FieldListInputType} input
 	 * @returns {Promise<IFieldModel[]>}
 	 */
-	async execute(input: FieldListInputType): Promise<IFieldModel[]> {
-		const { tableID, fieldIDs } = input;
+	async execute(input: FieldGetByIDsInputType): Promise<IFieldModel[]> {
+		const { fieldIDs } = input;
 
-		const fields = await this._fieldRepository.getAll({ tableID, ...(fieldIDs?.length ? { id: fieldIDs } : {}) });
+		const fields = await this._fieldRepository.getAll({ id: fieldIDs });
 		if (!fields.length) throw TableException.tableNotFound();
 
 		return fields;
